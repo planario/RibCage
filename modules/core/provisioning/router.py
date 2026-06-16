@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from modules.core.auth import Actor, generate_token, resolve_actor
 from modules.core.database import get_session
 from modules.core.events.service import emit_event, write_audit
-from modules.core.models import Agent, Policy, Rib, TokenRecord
+from modules.core.models import Agent, Rib, TokenRecord
 
 router = APIRouter(prefix="/provisioning", tags=["provisioning"])
 

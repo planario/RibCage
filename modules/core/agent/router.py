@@ -44,6 +44,19 @@ class TokenResponse(BaseModel):
     scopes: list[str]
 
 
+def _agent_to_response(agent: Agent) -> AgentResponse:
+    return AgentResponse(
+        id=str(agent.id),
+        workspace_id=str(agent.workspace_id),
+        display_name=agent.display_name,
+        description=agent.description,
+        agent_class=agent.agent_class,
+        trust_level=agent.trust_level,
+        is_active=agent.is_active,
+        is_suspended=agent.is_suspended,
+    )
+
+
 @router.post("", response_model=AgentResponse)
 async def create_agent(
     body: AgentCreate,
@@ -85,16 +98,7 @@ async def create_agent(
         payload={"display_name": agent.display_name},
     )
     await session.commit()
-    return AgentResponse(
-        id=str(agent.id),
-        workspace_id=str(agent.workspace_id),
-        display_name=agent.display_name,
-        description=agent.description,
-        agent_class=agent.agent_class,
-        trust_level=agent.trust_level,
-        is_active=agent.is_active,
-        is_suspended=agent.is_suspended,
-    )
+    return _agent_to_response(agent)
 
 
 @router.post("/{agent_id}/tokens", response_model=TokenResponse)

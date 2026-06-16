@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import uuid
 from datetime import datetime, timezone
 
 import redis.asyncio as aioredis
@@ -12,7 +11,6 @@ from sqlalchemy import select
 
 from modules.core.config import settings
 from modules.core.database import async_session_factory
-from modules.core.events.service import emit_event
 from modules.core.models import OutboxEvent
 
 router = APIRouter(tags=["events"])

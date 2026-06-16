@@ -3,11 +3,12 @@
 import asyncio
 import os
 
+import redis.asyncio as aioredis
+
 from modules.core.config import settings
 from modules.core.database import async_session_factory
 from modules.core.events.service import publish_outbox_batch
 from modules.core.notification.router import deliver_webhooks
-import redis.asyncio as aioredis
 
 
 async def notification_worker():
