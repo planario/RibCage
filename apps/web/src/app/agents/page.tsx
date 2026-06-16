@@ -18,20 +18,20 @@ export default function AgentsPage() {
       router.push("/onboarding");
       return;
     }
-    const stored = localStorage.getItem(`ribcage_agents_${wsId}`);
-    if (stored) setAgents(JSON.parse(stored));
+    api<Agent[]>(`/workspaces/${wsId}/agents`)
+      .then(setAgents)
+      .catch(() => router.push("/login"));
   }, [wsId, router]);
 
   async function createAgent(e: React.FormEvent) {
     e.preventDefault();
     if (!wsId) return;
-    const agent = await api<Agent>("/agents", {
+    await api<Agent>("/agents", {
       method: "POST",
       body: JSON.stringify({ workspace_id: wsId, ...form }),
     });
-    const updated = [...agents, agent];
+    const updated = await api<Agent[]>(`/workspaces/${wsId}/agents`);
     setAgents(updated);
-    localStorage.setItem(`ribcage_agents_${wsId}`, JSON.stringify(updated));
     setForm({ display_name: "", agent_class: "developer", description: "" });
   }
 

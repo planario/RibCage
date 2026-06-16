@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-import uuid
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, EmailStr, Field
@@ -17,7 +16,7 @@ from modules.core.auth import (
     resolve_actor,
 )
 from modules.core.database import get_session
-from modules.core.events.service import emit_event, write_audit
+from modules.core.events.service import write_audit
 from modules.core.models import Session, User
 
 router = APIRouter(prefix="/auth", tags=["auth"])

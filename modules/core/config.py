@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 60
     refresh_token_expire_days: int = 30
     prometheus_enabled: bool = True
+    outbox_publisher_enabled: bool = True
 
 
 settings = Settings()

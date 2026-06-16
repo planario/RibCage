@@ -4,24 +4,25 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
-from starlette.responses import Response
 from sqlalchemy import text
+from starlette.responses import Response
 
+import modules.core.notification.router  # noqa: F401 — register notification handlers
+import modules.core.search.router  # noqa: F401 — register search event handlers
 from modules.core.agent.router import router as agent_router
 from modules.core.audit.router import router as audit_router
 from modules.core.config import settings
 from modules.core.database import async_session_factory, engine
-from modules.core.events.router import outbox_publisher_loop, router as stream_router
+from modules.core.events.router import outbox_publisher_loop
+from modules.core.events.router import router as stream_router
 from modules.core.identity.router import router as auth_router
 from modules.core.integration.router import router as integration_router
-from modules.core.moderation.router import router as moderation_router
 from modules.core.models import Base
+from modules.core.moderation.router import router as moderation_router
 from modules.core.notification.router import router as notification_router
 from modules.core.policy.router import router as policy_router
 from modules.core.provisioning.router import router as provisioning_router
-import modules.core.search.router  # noqa: F401 — register search event handlers
 from modules.core.search.router import router as search_router
-import modules.core.notification.router  # noqa: F401 — register notification handlers
 from modules.core.thread.router import router as thread_router
 from modules.core.workspace.router import router as workspace_router
 
@@ -33,7 +34,8 @@ async def lifespan(app: FastAPI):
     global _publisher_task
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    _publisher_task = asyncio.create_task(outbox_publisher_loop())
+    if settings.outbox_publisher_enabled:
+        _publisher_task = asyncio.create_task(outbox_publisher_loop())
     yield
     if _publisher_task:
         _publisher_task.cancel()

@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from modules.core.auth import Actor, resolve_actor
 from modules.core.database import get_session
 from modules.core.events.service import emit_event, write_audit
-from modules.core.models import Rib, Workspace
+from modules.core.models import Agent, Rib, Workspace
 
 router = APIRouter(tags=["workspace"])
 
@@ -43,6 +43,17 @@ class RibResponse(BaseModel):
     visibility: str
     is_archived: bool
     is_locked: bool
+
+
+class AgentResponse(BaseModel):
+    id: str
+    workspace_id: str
+    display_name: str
+    description: str | None
+    agent_class: str
+    trust_level: str
+    is_active: bool
+    is_suspended: bool
 
 
 def _slugify(value: str) -> str:
@@ -140,6 +151,32 @@ async def list_ribs(
         )
     ).scalars().all()
     return [_rib_to_response(rib) for rib in ribs]
+
+
+@router.get("/workspaces/{workspace_id}/agents", response_model=list[AgentResponse])
+async def list_workspace_agents(
+    workspace_id: uuid.UUID,
+    actor: Actor = Depends(resolve_actor),
+    session: AsyncSession = Depends(get_session),
+):
+    agents = (
+        await session.execute(
+            select(Agent).where(Agent.workspace_id == workspace_id).order_by(Agent.display_name)
+        )
+    ).scalars().all()
+    return [
+        AgentResponse(
+            id=str(agent.id),
+            workspace_id=str(agent.workspace_id),
+            display_name=agent.display_name,
+            description=agent.description,
+            agent_class=agent.agent_class,
+            trust_level=agent.trust_level,
+            is_active=agent.is_active,
+            is_suspended=agent.is_suspended,
+        )
+        for agent in agents
+    ]
 
 
 @router.get("/ribs/{rib_id}", response_model=RibResponse)

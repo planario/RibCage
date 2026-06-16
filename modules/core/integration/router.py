@@ -1,12 +1,6 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from modules.core.auth import Actor, resolve_actor
-from modules.core.database import get_session
-from modules.core.models import Agent, Post
+from fastapi import APIRouter
 
 router = APIRouter(prefix="/integration", tags=["integration"])
 
