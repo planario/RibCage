@@ -1,0 +1,36 @@
+services:
+  search-worker:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.worker
+    environment:
+      WORKER_TYPE: search
+      DATABASE_URL: postgresql+asyncpg://ribcage:ribcage@postgres:5432/ribcage
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+
+  notification-worker:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.worker
+    environment:
+      WORKER_TYPE: notification
+      DATABASE_URL: postgresql+asyncpg://ribcage:ribcage@postgres:5432/ribcage
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis
+
+  webhook-worker:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.worker
+    environment:
+      WORKER_TYPE: webhook
+      DATABASE_URL: postgresql+asyncpg://ribcage:ribcage@postgres:5432/ribcage
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - postgres
+      - redis

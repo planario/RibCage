@@ -1,0 +1,26 @@
+services:
+  api:
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+    environment:
+      OTEL_ENABLED: "true"
+
+  web:
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  postgres:
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    deploy:
+      restart_policy:
+        condition: on-failure
